@@ -41,20 +41,24 @@ class User {
       string getName();
       int getAge();
       string getLocation();
+      string getPassword();
 };
 
 class Validation {
 	public:
         Validation() {}
-		User validateUserLogin(User[], string email, string password);
+		int validateUserLogin(vector<User> allUsers, string email, string password);
 		int validateEmail(string email);
         int validateAge(int age);
         int validatePassword(string password);
+        int validateString(string);
+        User getUser(vector<User>, string);
 };
 
 class Pages {
     private:
-		User currentUser;
+		int currentUser;
+        vector<User> allUsers;
         Validation validation;
 	public:
         Pages() {}
@@ -115,61 +119,160 @@ void Pages::landingPage() {
         string options[] = {"Login", "Signup", "Exit"};
         showMenuOptions(options, 3);
         int choice;
-        cout << endl << endl << "Enter your choice: ";
-        cin >> choice;
+        do {
+            cout << endl << endl << "Enter your choice: ";
+            cin >> choice;
 
-        switch(choice) {
-            case 1: this->loginPage(); break;
-            case 2: this->signupPage(); break;
-            case 3: exit(0); break;
-        }
-
+            switch(choice) {
+                case 1: this->loginPage();
+                        this->userHomePage();
+                        break;
+                case 2: this->signupPage(); 
+                        this->userHomePage();
+                        break;
+                case 3: exit(0); break;
+                default: cout << endl << "Please provide valid choice" << endl;
+            }
+        }while(true);
     }
 }
 
 // Page 2
 void Pages::loginPage() {
+    showMenuOptions({}, 0);
     cout << "\n\t\t Login Page\n";
     string email, pswd;
+    int userIndex;
+    do {
+        do {
+            cout << "Enter your email: ";
+            cin >> email;
+        } while(validation.validateEmail(email) != 0);
+
+        do {
+            cout << "Password: ";
+            cin >> pswd;
+        } while(validation.validatePassword(pswd) != 0);    
+        userIndex = validation.validateUserLogin(allUsers, email, pswd);
+    } while(userIndex == -1);
+    currentUser = userIndex;
+    return;
+}
+
+// Page 3
+void Pages::signupPage() {
+    showMenuOptions({}, 0);
+	cout << "\n\t\t Signup Page\n";
+    string email, name, location, pswd;
+    int age;
     do {
         cout << "Enter your email: ";
         cin >> email;
     } while(validation.validateEmail(email) != 0);
 
     do {
+        cout << "Enter your name: ";
+        cin >> name;
+    } while(validation.validateString(name) != 0);
+
+    do {
+        cout << "Enter your age: ";
+        cin >> age;
+    } while(validation.validateAge(age) != 0);
+
+    cout << "Enter your location: ";
+    cin >> location;
+
+    do {
         cout << "Password: ";
         cin >> pswd;
     } while(validation.validatePassword(pswd) != 0);    
-}
 
-// Page 3
-void Pages::signupPage() {
-	while(true) {
-
-    }
+    User tempUser(email, name, age, location, pswd);
+    allUsers.push_back(tempUser);
+    currentUser = validation.validateUserLogin(allUsers, email, pswd);
+    return;
 }
 
 // Page 4
 void Pages::userHomePage() {
-	
+    string options[] = {"Friend Request", "Edit Profile Page", "Logout"};
+    showMenuOptions(options, 3);
+	cout << "----------Welcome " << allUsers[currentUser].getName() << "-------------" << endl;
+    int choice;
+    do {
+        cout << "Enter your choice: ";
+        cin >> choice;
+        switch(choice) {
+            case 1: friendRequestPage(); break;
+            case 2: editProfilePage(); break;
+            case 3: return;
+            default: cout << "Please provide valid choice";
+        }
+    }while(true);
 }
 
 // Page 5
 void Pages::editProfilePage() {
-	
+    string options[] = {"Name", "Age", "Location", "Password", "Go back"};
+	showMenuOptions(options, 5);
+    string temp;
+    int choice, tempAge;
+    do {
+        cout << "Enter your choice: ";
+        cin >> choice;
+        switch(choice) {
+            case 1: 
+                cout << "Enter Name: ";
+                cin >> temp;
+                validation.validateString(temp);
+                allUsers[currentUser].setName(temp);
+                cout << "Name updated successfully";
+                break;
+            case 2: 
+                cout << "Enter age: ";
+                cin >> tempAge;
+                validation.validateAge(tempAge);
+                allUsers[currentUser].setAge(tempAge);
+                cout << "Age updated successfully";
+                break;
+            case 3: 
+                cout << "Enter location: ";
+                cin >> temp;
+                allUsers[currentUser].setLocation(temp);
+                cout << "Location updated successfully";
+                break;
+            case 4: 
+                cout << "Enter new password: ";
+                cin >> temp;
+                validation.validatePassword(temp);
+                allUsers[currentUser].setPassword(temp);
+                cout << "Password updated successfully";
+                break;
+            case 5: 
+                return;
+            default: cout << "Please provide valid choice" << endl;
+        }
+    } while(true);
 }
 
 // Page 6
 void Pages::friendRequestPage() {
-	
+	showMenuOptions({"Friend Request", "Edit Profile Page", "Logout"}, 3);
 }
 
 // *********************************************************************************
 // ******************************* Class Validation ********************************
 // *********************************************************************************
 
-User Validation::validateUserLogin(User allUsers[], string email, string password) {
-    return allUsers[0];
+int Validation::validateUserLogin(vector<User> allUsers, string email, string password) {
+    for (int i=0; i < allUsers.size(); ++i) {
+        User tempUser = allUsers[i];
+        if(email.compare(tempUser.getEmail()) == 0 && password.compare(tempUser.getPassword()) == 0) {
+            return i;
+        } 
+    }
+    return -1;
 }
 
 int Validation::validateEmail(string email) {
@@ -184,6 +287,19 @@ int Validation::validatePassword(string password) {
     return 0;
 }
 
+int Validation::validateString(string str) {
+    
+}
+
+User Validation::getUser(vector<User> allUsers, string email) {
+    for (int i=0; i < allUsers.size(); ++i) {
+        User tempUser = allUsers[i];
+        if(email.compare(tempUser.getEmail()) == 0) {
+            return tempUser;
+        } 
+    }
+    return User();
+}
 
 // *********************************************************************************
 // ******************************* Class User **************************************
