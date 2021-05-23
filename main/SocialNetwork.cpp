@@ -139,7 +139,8 @@ void Pages::landingPage() {
 
 // Page 2
 void Pages::loginPage() {
-    showMenuOptions({}, 0);
+    // showMenuOptions({}, 0);
+    system("cls");
     cout << "\n\t\t Login Page\n";
     string email, pswd;
     int userIndex;
@@ -161,7 +162,8 @@ void Pages::loginPage() {
 
 // Page 3
 void Pages::signupPage() {
-    showMenuOptions({}, 0);
+    // showMenuOptions(, 0);
+    system("cls");
 	cout << "\n\t\t Signup Page\n";
     string email, name, location, pswd;
     int age;
@@ -258,7 +260,8 @@ void Pages::editProfilePage() {
 
 // Page 6
 void Pages::friendRequestPage() {
-	showMenuOptions({"Friend Request", "Edit Profile Page", "Logout"}, 3);
+    string options[] = {"Friend Request", "Edit Profile Page", "Logout"};
+	showMenuOptions(options, 3);
 }
 
 // *********************************************************************************
@@ -288,7 +291,7 @@ int Validation::validatePassword(string password) {
 }
 
 int Validation::validateString(string str) {
-    
+    return 0;
 }
 
 User Validation::getUser(vector<User> allUsers, string email) {
@@ -324,4 +327,28 @@ int User::getAge() {
 
 string User::getLocation() {
     return location;
+}
+
+string User::getPassword() {
+    return password;
+}
+
+void User::setEmail(string email) {
+
+}
+
+void User::setName(string name) {
+    this->name = name;
+}
+
+void User::setLocation(string loc) {
+    this->location = loc;
+}
+
+void User::setAge(int age) {
+    this->age = age;
+}
+
+void User::setPassword(string pswd) {
+    this->password = pswd;
 }
