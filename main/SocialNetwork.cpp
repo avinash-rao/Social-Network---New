@@ -283,7 +283,17 @@ int Validation::validateEmail(string email) {
 }
 
 int Validation::validateAge(int age) {
+<<<<<<< Updated upstream
     return 0;
+=======
+    string tempAge = to_string(age);
+    if(age>=12 && age<=95)
+        return 0;
+    else {
+        cout << "Age must be between 12 to 95.";
+        return -1;
+    }
+>>>>>>> Stashed changes
 }
 
 int Validation::validatePassword(string password) {
