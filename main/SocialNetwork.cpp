@@ -45,7 +45,7 @@ class User {
       string getLocation();
       string getPassword();
 
-      void addFriend(User user);
+      void addFriend(User* user);
       void displayFriendsList();
 };
 
@@ -57,7 +57,7 @@ class Validation {
         int validateAge(int age);
         int validatePassword(string password);
         int validateString(string);
-        User getUser(vector<User>, string);
+        User* getUser(vector<User>*, string);
 };
 
 class Pages {
@@ -230,12 +230,16 @@ void Pages::userHomePage() {
 
 // Page 5
 void Pages::editProfilePage() {
-    string options[] = {"Name", "Age", "Location", "Password", "Go back"};
+    string options[] = {"Name: "+allUsers[currentUser].getName(), 
+                        "Age: " + allUsers[currentUser].getAge(), 
+                        "Location: " + allUsers[currentUser].getLocation(), 
+                        "Password", 
+                        "Go back"};
     int optionSize = 5;
-	showMenuOptions(options, optionSize);
     string temp;
     int choice, tempAge;
     do {
+        showMenuOptions(options, optionSize);
         cout << "Enter your choice: ";
         cin >> choice;
         switch(choice) {
@@ -260,11 +264,18 @@ void Pages::editProfilePage() {
                 cout << "Location updated successfully";
                 break;
             case 4: 
-                cout << "Enter new password: ";
-                cin >> temp;
-                validation.validatePassword(temp);
-                allUsers[currentUser].setPassword(temp);
-                cout << "Password updated successfully";
+                cout << "Enter current password: ";
+                getline(cin>>ws, temp);
+                if(allUsers[currentUser].getPassword().compare(temp) == 0) {
+                    cout << "Enter new password: ";
+                    getline(cin>>ws, temp);
+                    validation.validatePassword(temp);
+                    allUsers[currentUser].setPassword(temp);
+                    cout << "Password updated successfully";
+                } 
+                else {
+                    cout << "Incorrect current password" << endl;
+                }
                 break;
             case 5: 
                 return;
@@ -282,8 +293,8 @@ void Pages::friendRequestPage() {
     cout << "Enter user's email: ";
     getline(cin>>ws, email);
     if(validation.validateEmail(email) == 0) {
-        User friendUser = validation.getUser(allUsers, email);
-        if(friendUser.getEmail() != "") {
+        User* friendUser = validation.getUser(&allUsers, email);
+        if(friendUser != NULL) {
             allUsers[currentUser].addFriend(friendUser);
         } 
         else {
@@ -326,14 +337,14 @@ int Validation::validateString(string str) {
     return 0;
 }
 
-User Validation::getUser(vector<User> allUsers, string email) {
-    for (int i=0; i < allUsers.size(); ++i) {
-        User tempUser = allUsers[i];
-        if(email.compare(tempUser.getEmail()) == 0) {
-            return tempUser;
+User* Validation::getUser(vector<User>* allUsersPtr, string email) {
+    for (int i=0; i < (*allUsersPtr).size(); ++i) {
+        User* userPtr = &(*allUsersPtr)[i];
+        if(email.compare(userPtr->getEmail()) == 0) {
+            return userPtr;
         } 
     }
-    return User();
+    return NULL;
 }
 
 // *********************************************************************************
@@ -385,9 +396,9 @@ void User::setPassword(string pswd) {
     this->password = pswd;
 }
 
-void User::addFriend(User user) {
-    friendsList.push_back(user);
-    user.friendsList.push_back(*this);
+void User::addFriend(User* friendUser) {
+    friendsList.push_back(*friendUser);
+    (*friendUser).friendsList.push_back(*this);
 }
 
 void User::displayFriendsList() {
