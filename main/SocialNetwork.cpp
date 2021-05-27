@@ -14,6 +14,8 @@
 #include <cstring>
 #include <regex>
 
+
+
 using namespace std;
 
 class User {
@@ -320,7 +322,7 @@ void Pages::userHomePage() {
 // Page 5
 void Pages::editProfilePage() {
     string options[] = {"Name: "+allUsers[currentUser].getName(), 
-                        "Age: " + allUsers[currentUser].getAge(), 
+                        "Age: " + to_string(allUsers[currentUser].getAge()), 
                         "Location: " + allUsers[currentUser].getLocation(), 
                         "Password", 
                         "Go back"};
