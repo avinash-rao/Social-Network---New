@@ -13,7 +13,7 @@
 #include<bits/stdc++.h>
 #include <cstring>
 #include <regex>
-
+#include <sstream>
 
 
 using namespace std;
@@ -199,7 +199,7 @@ void Pages::signupPage() {
     // showMenuOptions(, 0);
     system("cls");
 	cout << "\n\t\t Signup Page\n";
-    string email, name, location, pswd;
+    string email, name, location, pswd,agee;
     int age;
     string con="y"; int GoOn=0;
     while(con.compare("y")==0){
@@ -209,9 +209,24 @@ void Pages::signupPage() {
         cout << "Enter your name: ";
         getline(cin>>ws, name);
 
-        cout << "Enter your age: ";
-        cin >> age;
-
+            retry:
+             int count=0;
+             cout << "Enter your age: ";
+             cin >> agee;
+             for (int i=0; i<=agee.length(); i++)
+             {
+               if (isdigit(agee[i]))
+               count ++;
+             }
+             if(count==agee.length()){
+                stringstream convert(agee);
+                convert>>age;
+             }
+             else{
+                 cout<<"Enter digits only!!\n";
+                 goto retry;
+             }
+        
         cout << "Enter your location: ";
         getline(cin>>ws, location);
 
