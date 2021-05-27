@@ -14,6 +14,8 @@
 #include <cstring>
 #include <regex>
 
+
+
 using namespace std;
 
 class User {
@@ -323,11 +325,11 @@ void Pages::editProfilePage() {
     int choice, tempAge;
     do {
         string options[] = {"Name: "+allUsers[currentUser].getName(), 
-                            "Age: " + allUsers[currentUser].getAge(), 
-                            "Location: " + allUsers[currentUser].getLocation(), 
-                            "Password", 
-                            "Go back"};
-        int optionSize = 5;
+                        "Age: " + to_string(allUsers[currentUser].getAge()), 
+                        "Location: " + allUsers[currentUser].getLocation(), 
+                        "Password", 
+                        "Go back"};
+         int optionSize = 5;
         showMenuOptions(options, optionSize);
         cout << "Enter your choice: ";
         cin >> choice;
