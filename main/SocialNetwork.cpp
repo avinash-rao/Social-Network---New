@@ -10,6 +10,9 @@
 #include <string>
 #include <vector>
 #include <stdlib.h>
+#include<bits/stdc++.h>
+#include <cstring>
+#include <regex>
 
 using namespace std;
 
@@ -152,20 +155,41 @@ void Pages::loginPage() {
     cout << "\n\t\t Login Page\n";
     string email, pswd;
     int userIndex;
-    do {
-        do {
+
+    string con="y";
+    while(con.compare("y")==0){
             cout << "Enter your email: ";
             cin >> email;
-        } while(validation.validateEmail(email) != 0);
-
-        do {
             cout << "Password: ";
             cin >> pswd;
-        } while(validation.validatePassword(pswd) != 0);    
-        userIndex = validation.validateUserLogin(allUsers, email, pswd);
-    } while(userIndex == -1);
-    currentUser = userIndex;
-    return;
+            userIndex = validation.validateUserLogin(allUsers, email, pswd);
+            if(userIndex==-1){
+                cout<<"Your credentials are wrong. Do you want to retry? (y/n): ";
+                cin>>con;
+                transform(con.begin(), con.end(), con.begin(), ::tolower);
+            }
+            else{
+                currentUser = userIndex;
+                return;
+            }
+        
+    }
+    landingPage();
+
+
+    // do {
+    //     do {
+    //         cout << "Enter your email: ";
+    //         cin >> email;
+    //     } while(validation.validateEmail(email) != 0);
+
+    //     do {
+    //         cout << "Password: ";
+    //         cin >> pswd;
+    //     } while(validation.validatePassword(pswd) != 0);    
+    //     userIndex = validation.validateUserLogin(allUsers, email, pswd);
+    // } while(userIndex == -1);
+    // currentUser = userIndex;
 }
 
 // Page 3
@@ -175,28 +199,93 @@ void Pages::signupPage() {
 	cout << "\n\t\t Signup Page\n";
     string email, name, location, pswd;
     int age;
-    do {
+    string con="y"; int GoOn=0;
+    while(con.compare("y")==0){
         cout << "Enter your email: ";
         getline(cin>>ws, email);
-    } while(validation.validateEmail(email) != 0);
 
-    do {
         cout << "Enter your name: ";
         getline(cin>>ws, name);
-    } while(validation.validateString(name) != 0);
 
-    do {
         cout << "Enter your age: ";
         cin >> age;
-    } while(validation.validateAge(age) != 0);
 
-    cout << "Enter your location: ";
-    getline(cin>>ws, location);
+        cout << "Enter your location: ";
+        getline(cin>>ws, location);
 
-    do {
         cout << "Password: ";
         getline(cin>>ws, pswd);
-    } while(validation.validatePassword(pswd) != 0);    
+
+        if(validation.validateEmail(email)==0){
+            GoOn=0;
+        }
+        else{
+            cout<<"\n Invalid email ";
+            GoOn=1;
+        }
+        if(validation.validateString(name)==0){
+            GoOn=0;
+        }
+        else{
+            cout<<"\n Invalid Name ";//no numbers
+            GoOn=1;
+        }
+        if(validation.validateAge(age)==0){
+            GoOn=0;
+        }
+        else{
+            cout<<"\n Age must be between 14 to 95 ";//14 to 95
+            GoOn=1;
+        }
+        if(validation.validatePassword(pswd)==0){
+            GoOn=0;
+        }
+        else{
+            cout<<"\n Minimum 6 char required in Password ";
+            GoOn=1;
+        }
+
+        if(GoOn==0){
+            User tempUser(email, name, age, location, pswd);
+            allUsers.push_back(tempUser);
+            currentUser = validation.validateUserLogin(allUsers, email, pswd);
+            return;
+        }
+        else{
+            cout<<"\n Do you want to retry? (y / Press any key to exit)) :";
+            cin>>con;
+            transform(con.begin(), con.end(), con.begin(), ::tolower);
+        }
+        
+    }
+    landingPage();
+
+
+
+
+
+    // do {
+    //     cout << "Enter your email: ";
+    //     getline(cin>>ws, email);
+    // } while(validation.validateEmail(email) != 0);
+
+    // do {
+    //     cout << "Enter your name: ";
+    //     getline(cin>>ws, name);
+    // } while(validation.validateString(name) != 0);
+
+    // do {
+    //     cout << "Enter your age: ";
+    //     cin >> age;
+    // } while(validation.validateAge(age) != 0);
+
+    // cout << "Enter your location: ";
+    // getline(cin>>ws, location);
+
+    // do {
+    //     cout << "Password: ";
+    //     getline(cin>>ws, pswd);
+    // } while(validation.validatePassword(pswd) != 0);    
 
     User tempUser(email, name, age, location, pswd);
     allUsers.push_back(tempUser);
@@ -322,19 +411,49 @@ int Validation::validateUserLogin(vector<User> allUsers, string email, string pa
 }
 
 int Validation::validateEmail(string email) {
-    return 0;
+   const std::regex pattern
+      ("(\\w+)(\\.|_)?(\\w*)@(\\w+)(\\.(\\w+))+");
+
+   // try to match the string with the regular expression
+  //  return std::regex_match(email, pattern);
+   if(std::regex_match(email, pattern)){
+       return 0;
+   }
+   else{
+       return -1;
+   }
 }
 
 int Validation::validateAge(int age) {
-    return 0;
+    if(age>=12 && age<=95)
+        return 0;
+    else {
+        return -1;
+    }
 }
 
 int Validation::validatePassword(string password) {
-    return 0;
+    if(password.length()<=5){
+        return -1;
+    }
+    else{
+        return 0;
+    }
 }
 
 int Validation::validateString(string str) {
-    return 0;
+    int count=0;
+    for (int i=0; i<=str.length(); i++)
+    {
+        if (isalpha(str[i]))
+            count ++;
+    }
+    if(count==str.length()){
+        return 0;
+    }
+    else{
+        return -1;
+    }
 }
 
 User* Validation::getUser(vector<User>* allUsersPtr, string email) {
