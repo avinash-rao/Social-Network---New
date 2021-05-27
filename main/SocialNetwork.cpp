@@ -230,15 +230,15 @@ void Pages::userHomePage() {
 
 // Page 5
 void Pages::editProfilePage() {
-    string options[] = {"Name: "+allUsers[currentUser].getName(), 
-                        "Age: " + allUsers[currentUser].getAge(), 
-                        "Location: " + allUsers[currentUser].getLocation(), 
-                        "Password", 
-                        "Go back"};
-    int optionSize = 5;
     string temp;
     int choice, tempAge;
     do {
+        string options[] = {"Name: "+allUsers[currentUser].getName(), 
+                            "Age: " + allUsers[currentUser].getAge(), 
+                            "Location: " + allUsers[currentUser].getLocation(), 
+                            "Password", 
+                            "Go back"};
+        int optionSize = 5;
         showMenuOptions(options, optionSize);
         cout << "Enter your choice: ";
         cin >> choice;
