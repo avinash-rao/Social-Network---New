@@ -63,6 +63,8 @@ class Validation {
         int validatePassword(string password);
         int validateString(string);
         User* getUser(vector<User>*, string);
+        int findDistanceBetweenUsers(vector<User> allUsers, User* user1, User* user2);
+
 };
 
 class Pages {
@@ -84,6 +86,7 @@ class Pages {
 		void userHomePage();
 		void editProfilePage();
 		void friendRequestPage();
+        void findDistancePage();
 };
 
 
@@ -297,8 +300,8 @@ void Pages::signupPage() {
 
 // Page 4
 void Pages::userHomePage() {
-    string options[] = {"Friend Request", "Edit Profile Page", "Display friends", "Logout"};
-    int optionSize = 4;
+    string options[] = {"Friend Request", "Edit Profile Page", "Display friends", "Find distance", "Logout"};
+    int optionSize = 5;
     showMenuOptions(options, optionSize);
 	cout << "----------Welcome " << allUsers[currentUser].getName() << "-------------" << endl;
     int choice;
@@ -313,7 +316,10 @@ void Pages::userHomePage() {
                     showMenuOptions(options, optionSize);
                     break;
             case 3: allUsers[currentUser].displayFriendsList(); break;
-            case 4: return;
+            case 4: findDistancePage(); 
+                    showMenuOptions(options, optionSize);
+                    break;
+            case 5: return;
             default: cout << "Please provide valid choice";
         }
     }while(true);
@@ -398,6 +404,32 @@ void Pages::friendRequestPage() {
     return;
 }
 
+void Pages::findDistancePage() {
+    string options[1];
+	showMenuOptions(options, 0);
+    cout << "---------------- Find Distance Page---------------" << endl << endl;
+    string email;
+    cout << "Enter user's email: ";
+    getline(cin>>ws, email);
+    if(validation.validateEmail(email) == 0) {
+        User* friendUser = validation.getUser(&allUsers, email);
+        if(friendUser != NULL) {
+            int distance = validation.findDistanceBetweenUsers(allUsers, &allUsers[currentUser], friendUser);
+            cout << distance << endl << endl;
+        } 
+        else {
+            cout << "No user with this email" << endl;
+        }
+    }
+    else {
+        cout << "Invalid email" << endl;
+    }
+    cout << "Press any key to continue";
+    char temp;
+    cin >> temp;
+    return;
+}
+
 // *********************************************************************************
 // ******************************* Class Validation ********************************
 // *********************************************************************************
@@ -466,6 +498,42 @@ User* Validation::getUser(vector<User>* allUsersPtr, string email) {
         } 
     }
     return NULL;
+}
+
+int Validation::findDistanceBetweenUsers(vector<User> allUsers, User* user1, User* user2) {
+    // validate user1 and user2
+
+    int distance = 0;
+    vector<string> checkedUsers;
+
+    list<User*> queue;
+    queue.push_back(user1);
+
+    while(!queue.empty()) {
+        // Traverse all the users that is presently in queue
+        int initialSize = queue.size();
+        for(int i=0; i < initialSize; i++) {
+            User* currentUser = queue.front();
+            queue.pop_front();
+
+            //check currentUser's email against required email
+            if (currentUser->getEmail() == user2->getEmail()) {
+                return distance;
+            }
+            checkedUsers.push_back(currentUser->getEmail());
+
+            // Add all the unchecked friends of currentUser to queue
+            for(auto i = currentUser->friendsList.begin(); i != currentUser->friendsList.end(); ++i) {
+                User* tempUser = &(*i);
+                bool tempUserIsAlreadyChecked = find(checkedUsers.begin(), checkedUsers.end(), tempUser->getEmail()) != checkedUsers.end();
+                if(!tempUserIsAlreadyChecked) {
+                    queue.push_back(tempUser);
+                }
+            }
+        }
+        distance++;
+    }
+    return -1;
 }
 
 // *********************************************************************************
