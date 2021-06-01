@@ -13,6 +13,7 @@
 #include<bits/stdc++.h>
 #include <cstring>
 #include <regex>
+#include <algorithm>
 
 
 
@@ -27,7 +28,7 @@ class User {
       string password;
 
     public:
-      vector<User> friendsList;
+      vector<User*> friendsList;
 
       User() {}
       User(string email, string name, int age, string location, string password) {
@@ -63,7 +64,7 @@ class Validation {
         int validatePassword(string password);
         int validateString(string);
         User* getUser(vector<User>*, string);
-        int findDistanceBetweenUsers(vector<User> allUsers, User* user1, User* user2);
+        int findDistanceBetweenUsers(vector<User>* allUsers, User* user1, User* user2);
 
 };
 
@@ -414,7 +415,7 @@ void Pages::findDistancePage() {
     if(validation.validateEmail(email) == 0) {
         User* friendUser = validation.getUser(&allUsers, email);
         if(friendUser != NULL) {
-            int distance = validation.findDistanceBetweenUsers(allUsers, &allUsers[currentUser], friendUser);
+            int distance = validation.findDistanceBetweenUsers(&allUsers, &allUsers[currentUser], friendUser);
             cout << distance << endl << endl;
         } 
         else {
@@ -500,7 +501,7 @@ User* Validation::getUser(vector<User>* allUsersPtr, string email) {
     return NULL;
 }
 
-int Validation::findDistanceBetweenUsers(vector<User> allUsers, User* user1, User* user2) {
+int Validation::findDistanceBetweenUsers(vector<User>* allUsers, User* user1, User* user2) {
     // validate user1 and user2
 
     int distance = 0;
@@ -508,26 +509,33 @@ int Validation::findDistanceBetweenUsers(vector<User> allUsers, User* user1, Use
 
     list<User*> queue;
     queue.push_back(user1);
-
+    cout << endl << "printing currentuser email recursively:" << endl;
     while(!queue.empty()) {
         // Traverse all the users that is presently in queue
         int initialSize = queue.size();
         for(int i=0; i < initialSize; i++) {
             User* currentUser = queue.front();
+
+            cout << currentUser->getEmail();
             queue.pop_front();
 
             //check currentUser's email against required email
-            if (currentUser->getEmail() == user2->getEmail()) {
+            if (currentUser->getEmail().compare(user2->getEmail()) == 0) {
                 return distance;
             }
             checkedUsers.push_back(currentUser->getEmail());
+            for(auto chUser: checkedUsers)
+                cout << "Checked Users: " << chUser << "\n";
 
             // Add all the unchecked friends of currentUser to queue
             for(auto i = currentUser->friendsList.begin(); i != currentUser->friendsList.end(); ++i) {
-                User* tempUser = &(*i);
+                User* tempUser = *i;
+                cout << endl << "Entering in Queue: i:" << *i;
+                cout << tempUser->getName();
                 bool tempUserIsAlreadyChecked = find(checkedUsers.begin(), checkedUsers.end(), tempUser->getEmail()) != checkedUsers.end();
                 if(!tempUserIsAlreadyChecked) {
                     queue.push_back(tempUser);
+                    cout << tempUser->getEmail() << "bla \t";
                 }
             }
         }
@@ -586,14 +594,14 @@ void User::setPassword(string pswd) {
 }
 
 void User::addFriend(User* friendUser) {
-    friendsList.push_back(*friendUser);
-    (*friendUser).friendsList.push_back(*this);
+    friendsList.push_back(friendUser);
+    friendUser->friendsList.push_back(this);
 }
 
 void User::displayFriendsList() {
     cout << endl;
     for (int i=0; i<friendsList.size(); i++) {
-        cout << friendsList[i].getName() << "\t";
+        cout << friendsList[i]->getName() << "\t";
     }
     cout << endl;
     return;
