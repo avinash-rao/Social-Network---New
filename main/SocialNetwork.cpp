@@ -416,7 +416,7 @@ void Pages::findDistancePage() {
         User* friendUser = validation.getUser(&allUsers, email);
         if(friendUser != NULL) {
             int distance = validation.findDistanceBetweenUsers(&allUsers, &allUsers[currentUser], friendUser);
-            cout << distance << endl << endl;
+            cout << "\n Distance: " << distance << endl << endl;
         } 
         else {
             cout << "No user with this email" << endl;
@@ -425,7 +425,7 @@ void Pages::findDistancePage() {
     else {
         cout << "Invalid email" << endl;
     }
-    cout << "Press any key to continue";
+    cout << "Press any key to go back: ";
     char temp;
     cin >> temp;
     return;
@@ -513,10 +513,15 @@ int Validation::findDistanceBetweenUsers(vector<User>* allUsers, User* user1, Us
     while(!queue.empty()) {
         // Traverse all the users that is presently in queue
         int initialSize = queue.size();
+        // cout << "\n bF Q size:" << queue.size();
         for(int i=0; i < initialSize; i++) {
             User* currentUser = queue.front();
 
-            cout << currentUser->getEmail();
+            // cout << "\n inF Q size:" << queue.size();
+            // for(auto qUser: queue)
+            //     cout << "\n Current Users: " << qUser << "\n";
+
+            // cout << "\n Q CurrentUser: " <<currentUser->getEmail();
             queue.pop_front();
 
             //check currentUser's email against required email
@@ -524,22 +529,22 @@ int Validation::findDistanceBetweenUsers(vector<User>* allUsers, User* user1, Us
                 return distance;
             }
             checkedUsers.push_back(currentUser->getEmail());
-            for(auto chUser: checkedUsers)
-                cout << "Checked Users: " << chUser << "\n";
+            // for(auto chUser: checkedUsers)
+            //     cout << "\n Checked Users: " << chUser << "\n";
 
             // Add all the unchecked friends of currentUser to queue
             for(auto i = currentUser->friendsList.begin(); i != currentUser->friendsList.end(); ++i) {
                 User* tempUser = *i;
-                cout << endl << "Entering in Queue: i:" << *i;
-                cout << tempUser->getName();
+                // cout << "\n TempUser: " << tempUser->getName();
                 bool tempUserIsAlreadyChecked = find(checkedUsers.begin(), checkedUsers.end(), tempUser->getEmail()) != checkedUsers.end();
                 if(!tempUserIsAlreadyChecked) {
                     queue.push_back(tempUser);
-                    cout << tempUser->getEmail() << "bla \t";
+                    // cout << "\n IF: " << tempUser->getEmail() << " bla \t";
                 }
             }
         }
         distance++;
+        // cout << "\n distance:" << distance;
     }
     return -1;
 }
