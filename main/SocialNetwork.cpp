@@ -100,7 +100,7 @@ class Validation {
         Validation() {}
 		User* validateUserLogin(User_LinkedList allUsers, string email, string password);
 		int validateEmail(string email);
-        int validateSignUpEmail(string email);
+        int validateSignUpEmail(User_LinkedList allUsers, string email);
         int validateAge(int age);
         int validatePassword(string password);
         int validateString(string);
@@ -244,31 +244,19 @@ void Pages::signupPage() {
         cout << "Password: ";
         getline(cin>>ws, pswd);
 
-        if(validation.validateSignUpEmail(email)==0){
-            GoOn=0;
-        }
-        else{
+        if(validation.validateSignUpEmail(allUsers, email)!=0){
             cout<<"\n Invalid email ";
             GoOn=1;
         }
-        if(validation.validateString(name)==0){
-            GoOn=0;
-        }
-        else{
+        if(validation.validateString(name)!=0){
             cout<<"\n Invalid Name ";//no numbers
             GoOn=1;
         }
-        if(validation.validateAge(age)==0){
-            GoOn=0;
-        }
-        else{
+        if(validation.validateAge(age)!=0){
             cout<<"\n Age must be between 14 to 95 ";//14 to 95
             GoOn=1;
         }
-        if(validation.validatePassword(pswd)==0){
-            GoOn=0;
-        }
-        else{
+        if(validation.validatePassword(pswd)!=0){
             cout<<"\n Minimum 6 char required in Password ";
             GoOn=1;
         }
@@ -405,7 +393,7 @@ void Pages::friendRequestPage() {
                 User* currentUser2 = queue.front();
                 if(currentUser2->getEmail() == email)
                 {
-                    uniqueFriend == 0;
+                    uniqueFriend = 0;
                     cout << "You cannot send friend request to yourself.";
                     sleep(1);
                 }
@@ -475,34 +463,25 @@ User* Validation::validateUserLogin(User_LinkedList allUsers, string email, stri
     return NULL;
 }
 
-int Validation::validateSignUpEmail(string email) {
-   string s2 = "@gmail.com";
-
-    // Traverse all the users that is presently in queue
-    list<User*> queue;
-    int initialSize = queue.size();
-    for(int i=0; i < initialSize; i++) {
-        User* currentUser = queue.front();
-        if(currentUser->getEmail() == email)
+int Validation::validateSignUpEmail(User_LinkedList allUsers, string email) {
+    if(validateEmail(email) == 0) {
+        // Traverse all the users that is presently in queue
+        UserNode* usernode = allUsers.getHead();
+        while (usernode != NULL)
         {
-            cout << "This email is already registered.";
-            sleep(1);
-            return -1;
+            string tempEmail = usernode->user.getEmail();
+            if(tempEmail.compare(email) == 0) {
+                cout << "This email is already registered.";
+                sleep(1);
+                return -1;
+            }
+            usernode = usernode->next;
         }
+        return 0;
     }
-
-   if (email.find(s2) != std::string::npos) {
+    else {
         return -1;
-   }
-
-   const std::regex pattern
-      ("(\\w+)(\\.|_)?(\\w*)@(\\w+)(\\.(\\w+))+");
-   if(std::regex_match(email, pattern)){
-       return 0;
-   }
-   else{
-       return -1;
-   }
+    }
 }
 
 int Validation::validateEmail(string email) {
