@@ -101,6 +101,7 @@ class Validation {
 		User* validateUserLogin(User_LinkedList allUsers, string email, string password);
 		int validateEmail(string email);
         int validateSignUpEmail(User_LinkedList allUsers, string email);
+        int validateInt(int choice);
         int validateAge(int age);
         int validatePassword(string password);
         int validateString(string);
@@ -268,6 +269,7 @@ void Pages::signupPage() {
             return;
         }
         else{
+            GoOn = 0;
             cout<<"\n Do you want to retry? (y / Press any key to exit)) :";
             cin>>con;
             transform(con.begin(), con.end(), con.begin(), ::tolower);
@@ -314,7 +316,7 @@ void Pages::editProfilePage() {
     cout << "----------Welcome " << currentUser->getName() << "-------------" << endl;
     cout << "---------------- Edit Profile Page---------------" << endl << endl;
     string temp;
-    int choice, tempAge;
+    int choice, tempAge, userInput=0;
     do {
         string options[] = {"Name: "+currentUser->getName(), 
                         "Age: " + to_string(currentUser->getAge()), 
@@ -323,8 +325,14 @@ void Pages::editProfilePage() {
                         "Go back"};
          int optionSize = 5;
         showMenuOptions(options, optionSize);
-        cout << "Enter your choice: ";
-        cin >> choice;
+        while(userInput!=1) {
+            cout << "Enter your choice: ";
+            cin >> choice;
+            if(validation.validateInt(choice)==1)
+                userInput=1;
+            /////////////////////////////////////////////////////////////////////////
+        }
+        
         switch(choice) {
             case 1: 
                 cout << "Enter Name: ";
@@ -382,29 +390,29 @@ void Pages::friendRequestPage() {
         if(friendUser != NULL) {
             for(auto i = currentUser->friendsList.begin(); i != currentUser->friendsList.end(); ++i) {
                 User* tempUser = *i;
-                if(email == tempUser->getEmail())
+                if(email == tempUser->getEmail()) {
                     uniqueFriend = 0;
+                    cout << "Already your friend" << endl;
+                    sleep(1);
+                }
             }
 
             // Traverse all the users that is presently in queue
-            list<User*> queue;
-            int initialSize = queue.size();
-            for(int i=0; i < initialSize; i++) {
-                User* currentUser2 = queue.front();
-                if(currentUser2->getEmail() == email)
-                {
-                    uniqueFriend = 0;
-                    cout << "You cannot send friend request to yourself.";
+            UserNode* usernode = allUsers.getHead();
+            while (usernode != NULL)
+            {
+                string tempEmail = usernode->user.getEmail();
+                if(tempEmail.compare(email) == 0) {
+                    uniqueFriend = 2;
+                    cout << "You can not send friend request to yourself.";
                     sleep(1);
                 }
+                usernode = usernode->next;
             }
 
             if(uniqueFriend == 1)
                 currentUser->addFriend(friendUser);
 
-            if(uniqueFriend == 0)
-                cout << "Already your friend" << endl;
-                sleep(1);
         } 
         else {
             cout << "No user with this email" << endl;
@@ -496,6 +504,14 @@ int Validation::validateEmail(string email) {
    else{
        return -1;
    }
+}
+
+int Validation::validateInt(int choice) {
+    if(choice>=1 && choice<=5)
+        return 1;
+    else {
+        return 0;
+    }
 }
 
 int Validation::validateAge(int age) {
