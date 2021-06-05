@@ -454,7 +454,7 @@ void Pages::editProfilePage() {
 void Pages::friendRequestPage() {
     string options[1];
 	showMenuOptions(options, 0);
-    cout << "----------Welcome " << currentUser->getName() << "-------------" << endl;
+    cout << " /t ----------Welcome " << currentUser->getName() << "-------------" << endl<< endl;
     cout << "---------------- Friend Request Page---------------" << endl << endl;
     string email;
     cout << "Enter user's email: ";
@@ -503,7 +503,7 @@ void Pages::friendRequestPage() {
 void Pages::findDistancePage() {
     string options[1];
 	showMenuOptions(options, 0);
-    cout << "----------Welcome " << currentUser->getName() << "-------------" << endl;
+    cout << " /t ----------Welcome " << currentUser->getName() << "-------------" << endl<< endl;
     cout << "---------------- Find Distance Page---------------" << endl << endl;
     string email;
     cout << "Enter user's email: ";
