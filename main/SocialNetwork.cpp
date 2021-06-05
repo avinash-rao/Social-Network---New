@@ -472,18 +472,17 @@ void Pages::friendRequestPage() {
                 }
             }
 
-            // Traverse all the users that is presently in queue
-            UserNode* usernode = allUsers.getHead();
-            while (usernode != NULL)
-            {
-                string tempEmail = usernode->user.getEmail();
-                if(tempEmail.compare(email) == 0) {
-                    uniqueFriend = 2;
-                    cout << "You can not send friend request to yourself.";
-                    sleep(1);
-                }
-                usernode = usernode->next;
+            // UserNode* usernode = allUsers.getHead();
+            // while (usernode != NULL)
+            // {
+            string tempEmail = currentUser->getEmail();
+            if(tempEmail.compare(email) == 0) {
+                uniqueFriend = 2;
+                cout << "You can not send friend request to yourself.";
+                sleep(1);
             }
+            //     usernode = usernode->next;
+            // }
 
             if(uniqueFriend == 1)
                 currentUser->addFriend(friendUser);
