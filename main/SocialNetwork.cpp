@@ -317,7 +317,7 @@ void Pages::userHomePage() {
     string options[] = {"Friend Request", "Edit Profile Page", "Display friends", "Find distance", "Logout"};
     int optionSize = 5;
     showMenuOptions(options, optionSize);
-	cout << "----------Welcome " << currentUser->getName() << "-------------" << endl;
+	cout << "----------Welcome " << currentUser->getName() << "-------------" << endl << endl;
     int choice; string choicee;
     do {
         retrychoice2:
@@ -343,7 +343,14 @@ void Pages::userHomePage() {
             case 2: editProfilePage(); 
                     showMenuOptions(options, optionSize);
                     break;
-            case 3: currentUser->displayFriendsList(); break;
+            case 3: if(currentUser->friendsList.size() == 0) {
+                        cout << endl << "You have no friends added. Go to 'Friend Request' page to add friends" << endl;
+                    } else {
+                        cout << endl << "Your friend list: ";
+                        currentUser->displayFriendsList(); 
+                    }                   
+                    cout << endl;     
+                    break;
             case 4: findDistancePage(); 
                     showMenuOptions(options, optionSize);
                     break;
@@ -401,6 +408,7 @@ void Pages::editProfilePage() {
                 validation.validateString(temp);
                 currentUser->setName(temp);
                 cout << "Name updated successfully";
+                sleep(1);
                 break;
             case 2: 
                 retry1:
@@ -422,12 +430,14 @@ void Pages::editProfilePage() {
                 validation.validateAge(tempAge);
                 currentUser->setAge(tempAge);
                 cout << "Age updated successfully";
+                sleep(1);
                 break;
             case 3: 
                 cout << "Enter location: ";
                 cin >> temp;
                 currentUser->setLocation(temp);
                 cout << "Location updated successfully";
+                sleep(1);
                 break;
             case 4: 
                 cout << "Enter current password: ";
@@ -438,14 +448,16 @@ void Pages::editProfilePage() {
                     validation.validatePassword(temp);
                     currentUser->setPassword(temp);
                     cout << "Password updated successfully";
+                    sleep(1);
                 } 
                 else {
                     cout << "Incorrect current password" << endl;
+                    sleep(1);
                 }
                 break;
             case 5: 
                 return;
-            default: cout << "Please provide valid choice" << endl;
+            default: cout << "Please provide valid choice" << endl; sleep(1);
         }
     } while(true);
 }
@@ -454,7 +466,7 @@ void Pages::editProfilePage() {
 void Pages::friendRequestPage() {
     string options[1];
 	showMenuOptions(options, 0);
-    cout << " /t ----------Welcome " << currentUser->getName() << "-------------" << endl<< endl;
+    cout << " \t ----------Welcome " << currentUser->getName() << "-------------" << endl<< endl;
     cout << "---------------- Friend Request Page---------------" << endl << endl;
     string email;
     cout << "Enter user's email: ";
@@ -484,8 +496,11 @@ void Pages::friendRequestPage() {
             //     usernode = usernode->next;
             // }
 
-            if(uniqueFriend == 1)
+            if(uniqueFriend == 1) {
                 currentUser->addFriend(friendUser);
+                cout << friendUser->getEmail() << " has been added to your friend list :)" << endl;
+                sleep(1);
+            }
 
         } 
         else {
@@ -503,7 +518,7 @@ void Pages::friendRequestPage() {
 void Pages::findDistancePage() {
     string options[1];
 	showMenuOptions(options, 0);
-    cout << " /t ----------Welcome " << currentUser->getName() << "-------------" << endl<< endl;
+    cout << " \t ----------Welcome " << currentUser->getName() << "-------------" << endl<< endl;
     cout << "---------------- Find Distance Page---------------" << endl << endl;
     string email;
     cout << "Enter user's email: ";
@@ -512,7 +527,10 @@ void Pages::findDistancePage() {
         User* friendUser = validation.getUser(allUsers, email);
         if(friendUser != NULL) {
             int distance = validation.findDistanceBetweenUsers(allUsers, currentUser, friendUser);
-            cout << distance << endl << endl;
+            if (distance == -1) 
+                cout << "Not linked by any of your friend" << endl << endl;
+            else
+                cout << "Distance: " << distance << endl << endl;
         } 
         else {
             cout << "No user with this email" << endl;
@@ -732,9 +750,8 @@ void User::addFriend(User* friendUser) {
 }
 
 void User::displayFriendsList() {
-    cout << endl;
     for(auto i = friendsList.begin(); i != friendsList.end(); ++i) {
-        cout << (*i)->getName();
+        cout << (*i)->getName() << "\t" ;
     }
     cout << endl;
     return;
